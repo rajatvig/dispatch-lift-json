@@ -1,5 +1,5 @@
-package dispatch.liftjson
-import dispatch._
+package dispatch.classic.liftjson
+import dispatch.classic._
 
 import net.liftweb.json._
 import JsonDSL._
@@ -19,7 +19,7 @@ trait ImplicitJsonVerbs {
 }
 class JsonHandlerVerbs(subject: HandlerVerbs) {
   /** Process response as JsValue in block */
-  def ># [T](block: JValue => T) = subject >> { (stm, charset) => 
+  def ># [T](block: JValue => T) = subject >> { (stm, charset) =>
     block(JsonParser.parse(new java.io.InputStreamReader(stm, charset)))
   }
   def as_pretty = this ># { js => Js.prettyrender(js) }
@@ -53,7 +53,7 @@ object Js extends TypeMappers with ImplicitJsonVerbs {
   class SymOp(sym: Symbol) {
     def ?[T](block: JValue => List[T]): JValue => List[T] = {
       case JObject(l) => l filter { _.name == sym.name } flatMap { jf => block(jf.value) }
-      case JField(name, value) if name == sym.name => block(value) 
+      case JField(name, value) if name == sym.name => block(value)
       case _ => Nil
     }
   }
